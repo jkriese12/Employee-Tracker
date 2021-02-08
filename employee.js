@@ -43,16 +43,22 @@ function startQuery() {
 }
 // Function to show all employees
 function viewAll() {
-  let query = "SELECT first_name, last_name FROM employee";
+  let query =
+    "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id)";
   connection.query(query, function (err, res) {
     if (err) throw err;
     let t = new ezTable();
     res.forEach((answer) => {
-      t.cell("Name", answer.first_name + " " + answer.last_name);
-      t.cell("Role");
+      t.cell("ID", answer.id);
+      t.cell("First Name", answer.first_name);
+      t.cell("Last Name", answer.last_name);
+      t.cell("Role", answer.title);
+      t.cell("Department", answer.name);
       t.cell("Salary");
+      t.cell("Manager");
       t.newRow();
       console.log(t.toString());
     });
   });
+  connection.end();
 }
