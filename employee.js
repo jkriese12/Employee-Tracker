@@ -1,7 +1,8 @@
 // Import the NPM packages
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-
+const consoleTable = require("console.table");
+const ezTable = require("easy-table");
 // Connect to the employee_db database using a localhost connection
 const connection = mysql.createConnection({
   host: "localhost",
@@ -45,8 +46,13 @@ function viewAll() {
   let query = "SELECT first_name, last_name FROM employee";
   connection.query(query, function (err, res) {
     if (err) throw err;
-    for (var i = 0; i < res.length; i++) {
-      console.log(res[i].first_name + " " + res[i].last_name);
-    }
+    let t = new ezTable();
+    res.forEach((answer) => {
+      t.cell("Name", answer.first_name + " " + answer.last_name);
+      t.cell("Role");
+      t.cell("Salary");
+      t.newRow();
+      console.log(t.toString());
+    });
   });
 }
