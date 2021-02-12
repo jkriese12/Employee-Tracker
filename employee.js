@@ -30,7 +30,11 @@ function startQuery() {
         name: "choices",
         type: "list",
         message: "What would you like to do?",
-        choices: ["View all employees", "View all employees by department"],
+        choices: [
+          "View all employees",
+          "View all employees by department",
+          "Add Employee",
+        ],
       },
     ])
     .then(function (answer) {
@@ -38,6 +42,8 @@ function startQuery() {
         viewAll();
       } else if (answer.choices === "View all employees by department") {
         departmentView();
+      } else if (answer.choices === "Add Employee") {
+        addEmployee();
       }
     });
 }
@@ -62,7 +68,7 @@ function viewAll() {
   });
   connection.end();
 }
-
+// Function to look at all employees for specific department
 function departmentView() {
   inquirer
     .prompt([
@@ -92,6 +98,44 @@ function departmentView() {
           console.log(table.toString());
         });
         connection.end();
+      });
+    });
+}
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "empFirst",
+        type: "input",
+        message: "Please enter the employees first name",
+      },
+      {
+        name: "empLast",
+        type: "input",
+        message: "Please enter the employees last name",
+      },
+      {
+        name: "empRole",
+        type: "list",
+        message: "Which role is the employee going to be doing?",
+        choices: [
+          "Sales Rep",
+          "Sales Lead",
+          "Acountant",
+          "CFO",
+          "Lawyer",
+          "Paralegal",
+          "HR Rep",
+          "HR Lead",
+          "Software Developer",
+          "Sr. Software Developer",
+        ],
+      },
+    ])
+    .then(function (answer) {
+      let query = "INSERT ";
+      connection.query(query, function (err, res) {
+        if (err) throw err;
       });
     });
 }
