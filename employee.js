@@ -74,6 +74,24 @@ function departmentView() {
       },
     ])
     .then(function (answer) {
-      let query = "SELECT employee.first_name, role.department_id, FROM employee  ";
+      // JSON.stringify(answer);
+      let query =
+        "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id) WHERE department.name = ?";
+      connection.query(query, answer.deptChoice, function (err, res) {
+        if (err) throw err;
+        let table = new ezTable();
+        res.forEach((answer) => {
+          table.cell("ID", answer.id);
+          table.cell("First Name", answer.first_name);
+          table.cell("Last Name", answer.last_name);
+          table.cell("Role", answer.title);
+          table.cell("Department", answer.name);
+          table.cell("Salary", answer.salary);
+          table.cell("Manager");
+          table.newRow();
+          console.log(table.toString());
+        });
+        connection.end();
+      });
     });
 }
