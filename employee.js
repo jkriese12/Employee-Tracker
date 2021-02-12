@@ -37,7 +37,7 @@ function startQuery() {
       if (answer.choices === "View all employees") {
         viewAll();
       } else if (answer.choices === "View all employees by department") {
-        viewByDept();
+        departmentView();
       }
     });
 }
@@ -54,11 +54,26 @@ function viewAll() {
       t.cell("Last Name", answer.last_name);
       t.cell("Role", answer.title);
       t.cell("Department", answer.name);
-      t.cell("Salary");
+      t.cell("Salary", answer.salary);
       t.cell("Manager");
       t.newRow();
       console.log(t.toString());
     });
   });
   connection.end();
+}
+
+function departmentView() {
+  inquirer
+    .prompt([
+      {
+        name: "deptChoice",
+        type: "list",
+        message: "Which department would you like to view?",
+        choices: ["Sales", "Finance", "Legal", "HR", "Engineering"],
+      },
+    ])
+    .then(function (answer) {
+      let query = "SELECT employee.first_name, role.department_id, FROM employee  ";
+    });
 }
