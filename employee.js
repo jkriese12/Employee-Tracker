@@ -33,6 +33,8 @@ function startQuery() {
         choices: [
           "View all employees",
           "View all employees by department",
+          "View all roles",
+          "View all departments",
           "Add Employee",
           "Add Department",
           "Add Role",
@@ -50,6 +52,10 @@ function startQuery() {
         addDepartment();
       } else if (answer.choices === "Add Role") {
         addRole();
+      } else if (answer.choices === "View all roles") {
+        viewAllRoles();
+      } else if (answer.choices === "View all departments") {
+        viewAllDepts();
       }
     });
 }
@@ -163,7 +169,6 @@ function addDepartment() {
       });
     });
 }
-
 // Adding a new role
 function addRole() {
   connection.query("SELECT * FROM department", function (err, res) {
@@ -212,5 +217,18 @@ function addRole() {
           }
         );
       });
+  });
+}
+// View all departments
+function viewAllRoles() {
+  let query = "SELECT * FROM role";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    let t = new ezTable();
+    res.forEach((answer) => {
+      t.cell("Role", answer.title);
+      t.newRow();
+    });
+    console.log(t.toString());
   });
 }
