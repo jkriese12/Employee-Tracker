@@ -34,6 +34,8 @@ function startQuery() {
           "View all employees",
           "View all employees by department",
           "Add Employee",
+          "Add Department",
+          "Add Role",
         ],
       },
     ])
@@ -44,6 +46,10 @@ function startQuery() {
         departmentView();
       } else if (answer.choices === "Add Employee") {
         addEmployee();
+      } else if (answer.choices === "Add Department") {
+        addDepartment();
+      } else if (answer.choices === "Add Role") {
+        addRole();
       }
     });
 }
@@ -63,8 +69,8 @@ function viewAll() {
       t.cell("Salary", answer.salary);
       t.cell("Manager");
       t.newRow();
-      console.log(t.toString());
     });
+    console.log(t.toString());
   });
   connection.end();
 }
@@ -95,47 +101,116 @@ function departmentView() {
           table.cell("Salary", answer.salary);
           table.cell("Manager");
           table.newRow();
-          console.log(table.toString());
         });
+        console.log(table.toString());
         connection.end();
       });
     });
 }
+// Function to add employee to the database
 function addEmployee() {
+  connection.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          name: "empFirst",
+          type: "input",
+          message: "Please enter the employees first name",
+        },
+        {
+          name: "empLast",
+          type: "input",
+          message: "Please enter the employees last name",
+        },
+        {
+          name: "empRole",
+          type: "list",
+          message: "Which role was the employee hired for?",
+          choices: function () {
+            let choiceArray = [];
+            for (var i = 0; i < results.length; i++) {
+              choiceArray.push(results[i].title);
+            }
+            return choiceArray;
+          },
+        },
+      ])
+      .then(function (answer) {
+        let query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (${answer.empFirst}, ${answer.empLast}, )`;
+
+        connection.query(query, function (err, res) {
+          if (err) throw err;
+        });
+      });
+  });
+}
+// Adding a new department
+function addDepartment() {
   inquirer
     .prompt([
       {
-        name: "empFirst",
+        name: "dept",
         type: "input",
-        message: "Please enter the employees first name",
-      },
-      {
-        name: "empLast",
-        type: "input",
-        message: "Please enter the employees last name",
-      },
-      {
-        name: "empRole",
-        type: "list",
-        message: "Which role is the employee going to be doing?",
-        choices: [
-          "Sales Rep",
-          "Sales Lead",
-          "Acountant",
-          "CFO",
-          "Lawyer",
-          "Paralegal",
-          "HR Rep",
-          "HR Lead",
-          "Software Developer",
-          "Sr. Software Developer",
-        ],
+        message: "What department would you like to add?",
       },
     ])
     .then(function (answer) {
-      let query = "INSERT ";
+      let query = `INSERT INTO department (name) VALUES ('${answer.dept}')`;
       connection.query(query, function (err, res) {
         if (err) throw err;
+        console.log("New department " + answer.dept + " added to database");
       });
     });
+}
+
+// Adding a new role
+function addRole() {
+  connection.query("SELECT * FROM department", function (err, res) {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          name: "role",
+          type: "input",
+          message: "What is the name of the role you are adding?",
+        },
+        {
+          name: "salary",
+          type: "input",
+          message: "What is the salary for this role?",
+          validate: function (value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          },
+        },
+        {
+          name: "dept",
+          type: "list",
+          message: "What department does this belong to?",
+          choices: function () {
+            let choiceArray = [];
+            for (var i = 0; i < res.length; i++) {
+              choiceArray.push(res[i].name);
+            }
+            return choiceArray;
+          },
+        },
+      ])
+      .then(function (answer) {
+        let query =
+          "INSERT INTO role (title, salary, department_id) VALUES (?, ?, (SELECT ID FROM department WHERE name=?))";
+        connection.query(
+          query,
+          [answer.role, answer.salary, answer.dept],
+          function (err, res) {
+            if (err) throw err;
+            console.log("Role successfully added!");
+          }
+        );
+      });
+  });
 }
