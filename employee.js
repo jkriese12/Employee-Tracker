@@ -38,6 +38,8 @@ function startQuery() {
           "Add Employee",
           "Add Department",
           "Add Role",
+          "Update employee role",
+          "Leave database",
         ],
       },
     ])
@@ -56,6 +58,10 @@ function startQuery() {
         viewAllRoles();
       } else if (answer.choices === "View all departments") {
         viewAllDepts();
+      } else if (answer.choices === "Update employee role") {
+        updateEmpRole();
+      } else {
+        connection.end();
       }
     });
 }
@@ -161,6 +167,7 @@ function addEmployee() {
           function (err, res) {
             if (err) throw err;
             console.log("Employee added!");
+            startQuery();
           }
         );
       });
@@ -181,6 +188,7 @@ function addDepartment() {
       connection.query(query, function (err, res) {
         if (err) throw err;
         console.log("New department " + answer.dept + " added to database");
+        startQuery();
       });
     });
 }
@@ -229,6 +237,7 @@ function addRole() {
           function (err, res) {
             if (err) throw err;
             console.log("Role successfully added!");
+            startQuery();
           }
         );
       });
@@ -259,5 +268,6 @@ function viewAllDepts() {
       t.newRow();
     });
     console.log(t.toString());
+    startQuery();
   });
 }
