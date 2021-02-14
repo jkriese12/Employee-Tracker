@@ -77,41 +77,50 @@ function viewAll() {
       t.newRow();
     });
     console.log(t.toString());
+    startQuery();
   });
-  connection.end();
 }
 // Function to look at all employees for specific department
 function departmentView() {
-  inquirer
-    .prompt([
-      {
-        name: "deptChoice",
-        type: "list",
-        message: "Which department would you like to view?",
-        choices: ["Sales", "Finance", "Legal", "HR", "Engineering"],
-      },
-    ])
-    .then(function (answer) {
-      // JSON.stringify(answer);
-      let query =
-        "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id) WHERE department.name = ?";
-      connection.query(query, answer.deptChoice, function (err, res) {
-        if (err) throw err;
-        let table = new ezTable();
-        res.forEach((answer) => {
-          table.cell("ID", answer.id);
-          table.cell("First Name", answer.first_name);
-          table.cell("Last Name", answer.last_name);
-          table.cell("Role", answer.title);
-          table.cell("Department", answer.name);
-          table.cell("Salary", answer.salary);
-          table.cell("Manager");
-          table.newRow();
+  connection.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          name: "deptChoice",
+          type: "list",
+          message: "Which department would you like to view?",
+          choices: function () {
+            let choiceArray = [];
+            for (var i = 0; i < results.length; i++) {
+              choiceArray.push(results[i].name);
+            }
+            return choiceArray;
+          },
+        },
+      ])
+      .then(function (answer) {
+        // JSON.stringify(answer);
+        let query =
+          "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id) WHERE department.name = ?";
+        connection.query(query, answer.deptChoice, function (err, res) {
+          if (err) throw err;
+          let table = new ezTable();
+          res.forEach((answer) => {
+            table.cell("ID", answer.id);
+            table.cell("First Name", answer.first_name);
+            table.cell("Last Name", answer.last_name);
+            table.cell("Role", answer.title);
+            table.cell("Department", answer.name);
+            table.cell("Salary", answer.salary);
+            table.cell("Manager");
+            table.newRow();
+          });
+          console.log(table.toString());
+          startQuery();
         });
-        console.log(table.toString());
-        connection.end();
       });
-    });
+  });
 }
 // Function to add employee to the database
 function addEmployee() {
@@ -143,11 +152,17 @@ function addEmployee() {
         },
       ])
       .then(function (answer) {
-        let query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (${answer.empFirst}, ${answer.empLast}, )`;
+        let query =
+          "INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, (SELECT id FROM role WHERE title=?))";
 
-        connection.query(query, function (err, res) {
-          if (err) throw err;
-        });
+        connection.query(
+          query,
+          [answer.empFirst, answer.empLast, answer.empRole],
+          function (err, res) {
+            if (err) throw err;
+            console.log("Employee added!");
+          }
+        );
       });
   });
 }
@@ -227,6 +242,20 @@ function viewAllRoles() {
     let t = new ezTable();
     res.forEach((answer) => {
       t.cell("Role", answer.title);
+      t.cell("Salary", answer.salary);
+      t.newRow();
+    });
+    console.log(t.toString());
+    startQuery();
+  });
+}
+function viewAllDepts() {
+  let query = "SELECT * FROM department";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    let t = new ezTable();
+    res.forEach((answer) => {
+      t.cell("Department", answer.name);
       t.newRow();
     });
     console.log(t.toString());
