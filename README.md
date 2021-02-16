@@ -7,8 +7,6 @@
 1. [Project Description](#Project-Description)
 1. [Usage Information](#Usage-Information)
 1. [Contribution Guidelines](#Contribution-Guidelines)
-1. [Installation Instructions](#Installation-Instructions)
-1. [Test Instructions](#Test-Instructions)
 1. [Questions](#Questions)
 1. [License](#License)
 
