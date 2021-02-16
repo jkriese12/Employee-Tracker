@@ -243,7 +243,7 @@ function addRole() {
       });
   });
 }
-// View all departments
+// View all roles
 function viewAllRoles() {
   let query = "SELECT * FROM role";
   connection.query(query, function (err, res) {
@@ -258,6 +258,7 @@ function viewAllRoles() {
     startQuery();
   });
 }
+// View all departments
 function viewAllDepts() {
   let query = "SELECT * FROM department";
   connection.query(query, function (err, res) {
@@ -269,5 +270,26 @@ function viewAllDepts() {
     });
     console.log(t.toString());
     startQuery();
+  });
+}
+// Update a single employees role
+function updateEmpRole() {
+  connection.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    inquirer.prompt([
+      {
+        name: "deptChoice",
+        type: "list",
+        message: "Which employee would you like to update?",
+        choices: function () {
+          let choiceArray = [];
+
+          for (var i = 0; i < results.length; i++) {
+            choiceArray.push([results[i].first_name, results[i].last_name]);
+          }
+          return choiceArray;
+        },
+      },
+    ]);
   });
 }
