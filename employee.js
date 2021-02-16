@@ -68,7 +68,7 @@ function startQuery() {
 // Function to show all employees
 function viewAll() {
   let query =
-    "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id)";
+    "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id, employee.manager_id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id)";
   connection.query(query, function (err, res) {
     if (err) throw err;
     let t = new ezTable();
@@ -274,6 +274,7 @@ function viewAllDepts() {
 }
 // Update a single employees role
 function updateEmpRole() {
+  viewAll2();
   connection.query(
     "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id)",
     function (err, results) {
@@ -281,13 +282,13 @@ function updateEmpRole() {
       inquirer
         .prompt([
           {
-            name: "deptChoice",
+            name: "empChoiceFirst",
             type: "list",
-            message: "Which employee would you like to update?",
+            message: "What is the ID of the employee you would like to update?",
             choices: function () {
               let choiceArray = [];
               for (var i = 0; i < results.length; i++) {
-                choiceArray.push(results[i].first_name + " " + results[i].last_name);
+                choiceArray.push(results[i].id);
               }
               return choiceArray;
             },
@@ -306,11 +307,39 @@ function updateEmpRole() {
           },
         ])
         .then(function (answer) {
-          let query = "UPDATE employee SET role_id";
-          connection.query(query, function (err, res) {
-            if (err) throw err;
-          });
+          console.log();
+          let query =
+            "UPDATE employee SET role_id = (SELECT id from role WHERE title=?) WHERE id=?";
+          connection.query(
+            query,
+            [answer.newRole, answer.empChoiceFirst],
+            function (err, res) {
+              if (err) throw err;
+              console.log("Employee updated!");
+              startQuery();
+            }
+          );
         });
     }
   );
+}
+
+function viewAll2() {
+  let query =
+    "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id, employee.manager_id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id)";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    let t = new ezTable();
+    res.forEach((answer) => {
+      t.cell("ID", answer.id);
+      t.cell("First Name", answer.first_name);
+      t.cell("Last Name", answer.last_name);
+      t.cell("Role", answer.title);
+      t.cell("Department", answer.name);
+      t.cell("Salary", answer.salary);
+      t.cell("Manager");
+      t.newRow();
+    });
+    console.log(t.toString());
+  });
 }
