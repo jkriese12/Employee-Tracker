@@ -82,7 +82,13 @@ function viewAll() {
       t.cell("Manager");
       t.newRow();
     });
+    console.log(
+      "****************************************************************************************\n"
+    );
     console.log(t.toString());
+    console.log(
+      "****************************************************************************************\n"
+    );
     startQuery();
   });
 }
@@ -122,7 +128,13 @@ function departmentView() {
             table.cell("Manager");
             table.newRow();
           });
+          console.log(
+            "****************************************************************************************\n"
+          );
           console.log(table.toString());
+          console.log(
+            "****************************************************************************************\n"
+          );
           startQuery();
         });
       });
@@ -166,7 +178,14 @@ function addEmployee() {
           [answer.empFirst, answer.empLast, answer.empRole],
           function (err, res) {
             if (err) throw err;
+            console.log(
+              "****************************************************************************************\n"
+            );
             console.log("Employee added!");
+            console.log("\n");
+            console.log(
+              "****************************************************************************************\n"
+            );
             startQuery();
           }
         );
@@ -187,7 +206,14 @@ function addDepartment() {
       let query = `INSERT INTO department (name) VALUES ('${answer.dept}')`;
       connection.query(query, function (err, res) {
         if (err) throw err;
+        console.log(
+          "****************************************************************************************\n"
+        );
         console.log("New department " + answer.dept + " added to database");
+        console.log("\n");
+        console.log(
+          "****************************************************************************************\n"
+        );
         startQuery();
       });
     });
@@ -236,7 +262,14 @@ function addRole() {
           [answer.role, answer.salary, answer.dept],
           function (err, res) {
             if (err) throw err;
+            console.log(
+              "****************************************************************************************\n"
+            );
             console.log("Role successfully added!");
+            console.log("\n");
+            console.log(
+              "****************************************************************************************\n"
+            );
             startQuery();
           }
         );
@@ -254,7 +287,13 @@ function viewAllRoles() {
       t.cell("Salary", answer.salary);
       t.newRow();
     });
+    console.log(
+      "****************************************************************************************\n"
+    );
     console.log(t.toString());
+    console.log(
+      "****************************************************************************************\n"
+    );
     startQuery();
   });
 }
@@ -268,7 +307,13 @@ function viewAllDepts() {
       t.cell("Department", answer.name);
       t.newRow();
     });
+    console.log(
+      "****************************************************************************************\n"
+    );
     console.log(t.toString());
+    console.log(
+      "****************************************************************************************\n"
+    );
     startQuery();
   });
 }
@@ -315,7 +360,14 @@ function updateEmpRole() {
             [answer.newRole, answer.empChoiceFirst],
             function (err, res) {
               if (err) throw err;
+              console.log(
+                "****************************************************************************************\n"
+              );
               console.log("Employee updated!");
+              console.log("\n");
+              console.log(
+                "****************************************************************************************\n"
+              );
               startQuery();
             }
           );
@@ -323,7 +375,7 @@ function updateEmpRole() {
     }
   );
 }
-
+// Function to call to show all employee information but does not call to use startQuery again
 function viewAll2() {
   let query =
     "SELECT employee.first_name, employee.last_name, employee.role_id, role.title, role.salary, role.id, role.department_id, department.id, department.name, employee.id, employee.manager_id FROM ((employee INNER JOIN role ON employee.role_id=role.id) INNER JOIN department ON role.department_id=department.id)";
@@ -340,6 +392,12 @@ function viewAll2() {
       t.cell("Manager");
       t.newRow();
     });
+    console.log(
+      "****************************************************************************************\n"
+    );
     console.log(t.toString());
+    console.log(
+      "****************************************************************************************\n"
+    );
   });
 }
