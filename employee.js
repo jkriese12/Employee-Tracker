@@ -276,20 +276,35 @@ function viewAllDepts() {
 function updateEmpRole() {
   connection.query("SELECT * FROM employee", function (err, results) {
     if (err) throw err;
-    inquirer.prompt([
-      {
-        name: "deptChoice",
-        type: "list",
-        message: "Which employee would you like to update?",
-        choices: function () {
-          let choiceArray = [];
-
-          for (var i = 0; i < results.length; i++) {
-            choiceArray.push([results[i].first_name, results[i].last_name]);
-          }
-          return choiceArray;
+    inquirer
+      .prompt([
+        {
+          name: "deptChoice",
+          type: "list",
+          message: "Which employee would you like to update?",
+          choices: function () {
+            let choiceArray = [];
+            for (var i = 0; i < results.length; i++) {
+              choiceArray.push(results[i].first_name + " " + results[i].last_name);
+            }
+            return choiceArray;
+          },
         },
-      },
-    ]);
+        {
+          name: "newRole",
+          type: "list",
+          message: "What is the updated role?",
+          choices: function () {
+            let choicearray1 = [];
+            for
+          },
+        },
+      ])
+      .then(function (answer) {
+        let query = "UPDATE employee SET role_id";
+        connection.query(query, function (err, res) {
+          if (err) throw err;
+        });
+      });
   });
 }
